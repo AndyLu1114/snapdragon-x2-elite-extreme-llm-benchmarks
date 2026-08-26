@@ -80,14 +80,16 @@ Multi Token Prediction (MTP) is a speculative decoding technique that enables mo
 
 ### CPU vs. GPU Performance with MTP
 
-![Qwen 27B CPU vs GPU with MTP](\plots\QWEN_27b_mtp_CPU_GPU.png "QWEN 27B CPU GPU benchmark")
+![Qwen 27B CPU vs GPU with MTP](/plots/QWEN_27b_mtp_CPU_GPU.png "QWEN 27B CPU GPU benchmark")
 
 While Unsloth notes that `--spec-draft-n-max 2` works best for most general setups (and recommends testing values from 1 to 6), hardware-specific testing reveals a different optimal configuration for this ARM architecture.
 
 * **CPU Optimization:** On the Snapdragon X2 Elite Extreme device, the CPU achieves peak performance with an `n-max` of 3.
+  
   * Decode: 16.85 tokens/sec.
 
 * **GPU Limitations:** The GPU gradually improves its throughput as `n-max` scales from 2 to 6, but overall, it performs substantially worse when MTP is enabled.
+
 * **Technical Bottleneck:** This GPU performance degradation is likely due to MTP forcing `ne11 > 1`, which routes operations to a tiled GEMM. Because a dedicated small-batch kernel does not currently exist, there is a noticeable performance gap between the highly optimized batch-1 specializations and the large-batch GEMMs utilized during MTP.
 
 ### Configuration
